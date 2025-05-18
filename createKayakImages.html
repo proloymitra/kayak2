@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Kayak Images</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 20px;
+        }
+        .canvas-container {
+            margin: 20px auto;
+            border: 1px solid #ccc;
+            display: inline-block;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 10px;
+            background-color: #2196F3;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>Create Kayak Images</h1>
+    <p>Click the buttons below to generate and download kayak images.</p>
+    
+    <div class="canvas-container">
+        <canvas id="kayakCanvas" width="300" height="150"></canvas>
+    </div>
+    
+    <div>
+        <button id="createKayak1">Create Kayak 1 (Racing)</button>
+        <button id="createKayak2">Create Kayak 2 (Balanced)</button>
+        <button id="createKayak3">Create Kayak 3 (Traditional)</button>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const canvas = document.getElementById('kayakCanvas');
+            const ctx = canvas.getContext('2d');
+            
+            // Racing Kayak (Kayak 1)
+            document.getElementById('createKayak1').addEventListener('click', function() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                // Draw racing kayak
+                ctx.save();
+                ctx.translate(150, 75);
+                
+                // Main kayak body - streamlined racing design
+                const gradient = ctx.createLinearGradient(-80, 0, 80, 0);
+                gradient.addColorStop(0, '#F57C00');
+                gradient.addColorStop(0.5, '#FF9800');
+                gradient.addColorStop(1, '#F57C00');
+                
+                ctx.fillStyle = gradient;
+                ctx.beginPath();
+                ctx.moveTo(-120, 0);
+                ctx.bezierCurveTo(-120, -20, -60, -25, 0, -25);
+                ctx.bezierCurveTo(60, -25, 120, -20, 120, 0);
+                ctx.bezierCurveTo(120, 20, 60, 25, 0, 25);
+                ctx.bezierCurveTo(-60, 25, -120, 20, -120, 0);
+                ctx.closePath();
+                ctx.fill();
+                
+                // Kayak details - racing stripes
+                ctx.strokeStyle = '#D84315';
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                ctx.moveTo(-100, -15);
+                ctx.lineTo(100, -15);
+                ctx.stroke();
+                
+                ctx.beginPath();
+                ctx.moveTo(-100, 15);
+                ctx.lineTo(100, 15);
+                ctx.stroke();
+                
+                // Cockpit
+                ctx.fillStyle = '#212121';
+                ctx.beginPath();
+                ctx.ellipse(0, 0, 25, 15, 0, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Shine/highlight
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.7)';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(-110, -10);
+                ctx.bezierCurveTo(-70, -20, 70, -20, 110, -10);
+                ctx.stroke();
+                
+                ctx.restore();
+                
+                // Create download link
+                const link = document.createElement('a');
+                link.download = 'kayakOpt1.png';
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            });
+            
+            // Balanced Kayak (Kayak 2)
+            document.getElementById('createKayak2').addEventListener('click', function() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                // Draw balanced kayak
+                ctx.save();
+                ctx.translate(150, 75);
+                
+                // Main kayak body - balanced design
+                const gradient = ctx.createLinearGradient(-70, 0, 70, 0);
+                gradient.addColorStop(0, '#388E3C');
+                gradient.addColorStop(0.5, '#4CAF50');
+                gradient.addColorStop(1, '#388E3C');
+                
+                ctx.fillStyle = gradient;
+                ctx.beginPath();
+                ctx.moveTo(-100, 0);
+                ctx.bezierCurveTo(-100, -25, -60, -30, 0, -30);
+                ctx.bezierCurveTo(60, -30, 100, -25, 100, 0);
+                ctx.bezierCurveTo(100, 25, 60, 30, 0, 30);
+                ctx.bezierCurveTo(-60, 30, -100, 25, -100, 0);
+                ctx.closePath();
+                ctx.fill();
+                
+                // Kayak details
+                ctx.strokeStyle = '#1B5E20';
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                ctx.moveTo(-80, -20);
+                ctx.lineTo(80, -20);
+                ctx.stroke();
+                
+                ctx.beginPath();
+                ctx.moveTo(-80, 20);
+                ctx.lineTo(80, 20);
+                ctx.stroke();
+                
+                // Cockpit
+                ctx.fillStyle = '#212121';
+                ctx.beginPath();
+                ctx.ellipse(0, 0, 25, 18, 0, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Shine/highlight
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.7)';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(-90, -15);
+                ctx.bezierCurveTo(-50, -25, 50, -25, 90, -15);
+                ctx.stroke();
+                
+                ctx.restore();
+                
+                // Create download link
+                const link = document.createElement('a');
+                link.download = 'kayak2.png';
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            });
+            
+            // Traditional Kayak (Kayak 3)
+            document.getElementById('createKayak3').addEventListener('click', function() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                // Draw traditional kayak
+                ctx.save();
+                ctx.translate(150, 75);
+                
+                // Main kayak body - traditional design, wider and more stable
+                const gradient = ctx.createLinearGradient(-60, 0, 60, 0);
+                gradient.addColorStop(0, '#5D4037');
+                gradient.addColorStop(0.5, '#795548');
+                gradient.addColorStop(1, '#5D4037');
+                
+                ctx.fillStyle = gradient;
+                ctx.beginPath();
+                ctx.moveTo(-90, 0);
+                ctx.bezierCurveTo(-90, -20, -60, -35, 0, -35);
+                ctx.bezierCurveTo(60, -35, 90, -20, 90, 0);
+                ctx.bezierCurveTo(90, 20, 60, 35, 0, 35);
+                ctx.bezierCurveTo(-60, 35, -90, 20, -90, 0);
+                ctx.closePath();
+                ctx.fill();
+                
+                // Kayak details - traditional patterns
+                ctx.strokeStyle = '#3E2723';
+                ctx.lineWidth = 2;
+                
+                // Horizontal bands
+                for (let y = -25; y <= 25; y += 10) {
+                    ctx.beginPath();
+                    ctx.moveTo(-70, y);
+                    ctx.lineTo(70, y);
+                    ctx.stroke();
+                }
+                
+                // Vertical supports
+                for (let x = -60; x <= 60; x += 20) {
+                    ctx.beginPath();
+                    ctx.moveTo(x, -25);
+                    ctx.lineTo(x, 25);
+                    ctx.stroke();
+                }
+                
+                // Cockpit
+                ctx.fillStyle = '#212121';
+                ctx.beginPath();
+                ctx.ellipse(0, 0, 20, 15, 0, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Traditional decorative elements at bow and stern
+                ctx.fillStyle = '#8D6E63';
+                ctx.beginPath();
+                ctx.moveTo(-90, 0);
+                ctx.lineTo(-100, -10);
+                ctx.lineTo(-90, -5);
+                ctx.closePath();
+                ctx.fill();
+                
+                ctx.beginPath();
+                ctx.moveTo(90, 0);
+                ctx.lineTo(100, -10);
+                ctx.lineTo(90, -5);
+                ctx.closePath();
+                ctx.fill();
+                
+                // Shine/highlight
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.7)';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(-70, -20);
+                ctx.bezierCurveTo(-40, -30, 40, -30, 70, -20);
+                ctx.stroke();
+                
+                ctx.restore();
+                
+                // Create download link
+                const link = document.createElement('a');
+                link.download = 'kayak3.png';
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            });
+            
+            // Draw initial kayak
+            document.getElementById('createKayak1').click();
+        });
+    </script>
+</body>
+</html>

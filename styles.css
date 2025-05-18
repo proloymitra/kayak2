@@ -1,0 +1,693 @@
+/* Global Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+:root {
+    --primary-color: #2196F3;
+    --secondary-color: #03A9F4;
+    --accent-color: #FFC107;
+    --background-color: #EFEFEF;
+    --dark-color: #333;
+    --light-color: #FFF;
+    --success-color: #4CAF50;
+    --danger-color: #F44336;
+    --river-blue: #1976D2;
+    --river-light: #BBDEFB;
+}
+
+body {
+    background-color: var(--background-color);
+    color: var(--dark-color);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    background-image: linear-gradient(to bottom, #87CEEB, #1E90FF);
+}
+
+/* Game Container */
+#game-container {
+    width: 100%;
+    max-width: 480px;
+    height: 100vh;
+    max-height: 800px;
+    background-color: var(--light-color);
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+}
+
+/* Game Screens */
+.game-screen {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: none;
+    flex-direction: column;
+    padding: 20px;
+    background-size: cover;
+    background-position: center;
+    transition: all 0.3s ease;
+}
+
+.game-screen.active {
+    display: flex;
+}
+
+/* Main Menu Screen */
+#main-menu {
+    justify-content: center;
+    align-items: center;
+    background-image: url('assets/images/main-bg.jpg');
+    background-color: var(--river-blue);
+    color: var(--light-color);
+    text-align: center;
+}
+
+.logo {
+    font-size: 36px;
+    font-weight: bold;
+    margin-bottom: 40px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.bottom-controls {
+    position: absolute;
+    bottom: 30px;
+    left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    padding: 0 30px;
+}
+
+.music-toggle {
+    display: flex;
+    align-items: center;
+}
+
+/* Buttons */
+button {
+    cursor: pointer;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    transition: all 0.2s ease;
+}
+
+.primary-btn {
+    background-color: var(--accent-color);
+    color: var(--dark-color);
+    padding: 12px 30px;
+    font-size: 18px;
+}
+
+.primary-btn:hover {
+    background-color: #FFD54F;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.secondary-btn {
+    background-color: rgba(255, 255, 255, 0.2);
+    color: var(--light-color);
+    border: 1px solid var(--light-color);
+}
+
+.secondary-btn:hover {
+    background-color: rgba(255, 255, 255, 0.3);
+}
+
+.mode-btn {
+    background-color: var(--primary-color);
+    color: var(--light-color);
+    width: 200px;
+    margin: 10px 0;
+    padding: 15px;
+    font-size: 18px;
+}
+
+.mode-btn:hover {
+    background-color: var(--secondary-color);
+}
+
+button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Kayak Selection Screen */
+#kayak-selection {
+    background-color: var(--river-light);
+    padding-top: 60px;
+}
+
+#kayak-selection h2, #river-selection h2, #mode-selection h2,
+#multiplayer-options h2, #create-room h2, #join-room h2, 
+#room-lobby h2, #end-game h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: var(--dark-color);
+    font-size: 24px;
+}
+
+.kayak-options {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 30px;
+    overflow-y: auto;
+    padding: 10px;
+}
+
+.kayak-option {
+    background-color: var(--light-color);
+    border-radius: 10px;
+    padding: 15px;
+    width: 100%;
+    max-width: 400px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.kayak-option:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.kayak-option.selected {
+    border: 3px solid var(--accent-color);
+}
+
+.kayak-image {
+    height: 80px;
+    background-color: #ddd;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+}
+
+.kayak-stats {
+    margin-bottom: 10px;
+}
+
+.stat-bar {
+    display: flex;
+    align-items: center;
+    margin-bottom: 5px;
+}
+
+.stat-bar span {
+    width: 120px;
+    font-size: 14px;
+}
+
+.stat-bar .stat-fill {
+    height: 10px;
+    background-color: var(--primary-color);
+    border-radius: 5px;
+}
+
+.kayak-description {
+    font-size: 12px;
+    color: #666;
+}
+
+/* River Selection Screen */
+#river-selection {
+    background-color: var(--river-light);
+    padding-top: 60px;
+}
+
+.river-options {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 30px;
+    overflow-y: auto;
+    padding: 10px;
+}
+
+.river-option {
+    background-color: var(--light-color);
+    border-radius: 10px;
+    padding: 15px;
+    width: 100%;
+    max-width: 400px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.river-option:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.river-option.selected {
+    border: 3px solid var(--accent-color);
+}
+
+.river-image {
+    height: 80px;
+    background-color: var(--river-blue);
+    border-radius: 5px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+    color: var(--light-color);
+}
+
+.river-info {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.difficulty, .length, .features {
+    font-size: 14px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.stars {
+    color: var(--accent-color);
+}
+
+.feature-icons {
+    font-size: 16px;
+}
+
+.river-description {
+    font-size: 12px;
+    color: #666;
+}
+
+/* Navigation Buttons */
+.nav-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: auto;
+    padding-top: 20px;
+}
+
+/* Game Mode Selection Screen */
+#mode-selection, #multiplayer-options {
+    background-color: var(--river-light);
+    justify-content: center;
+    align-items: center;
+}
+
+.mode-options, .mp-options {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 40px;
+}
+
+/* Multiplayer Screens */
+#create-room, #join-room, #room-lobby {
+    background-color: var(--light-color);
+}
+
+.room-code-container {
+    text-align: center;
+    margin: 20px 0;
+}
+
+.room-code {
+    font-size: 36px;
+    font-weight: bold;
+    margin: 10px 0;
+    letter-spacing: 5px;
+    color: var(--primary-color);
+}
+
+.player-slots {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin: 20px 0;
+}
+
+.player-slot {
+    background-color: var(--river-light);
+    border-radius: 8px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 80px;
+}
+
+.player-slot.waiting {
+    background-color: #f5f5f5;
+    color: #999;
+}
+
+.player-name {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.player-kayak {
+    width: 40px;
+    height: 40px;
+    background-color: #ddd;
+    border-radius: 50%;
+}
+
+.chat-container {
+    background-color: #f5f5f5;
+    border-radius: 8px;
+    height: 200px;
+    display: flex;
+    flex-direction: column;
+    margin: 20px 0;
+    overflow: hidden;
+}
+
+.chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 10px;
+}
+
+.chat-input-container {
+    display: flex;
+    border-top: 1px solid #ddd;
+}
+
+.chat-input-container input {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    outline: none;
+}
+
+.chat-input-container button {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 10px 15px;
+}
+
+.room-code-entry {
+    display: flex;
+    margin: 30px 0;
+}
+
+.room-code-entry input {
+    flex: 1;
+    padding: 12px;
+    font-size: 18px;
+    border: 1px solid #ddd;
+    border-radius: 5px 0 0 5px;
+}
+
+.room-code-entry button {
+    border-radius: 0 5px 5px 0;
+}
+
+.room-code-display {
+    text-align: center;
+    font-size: 14px;
+    color: #666;
+    margin-top: auto;
+    margin-bottom: 20px;
+}
+
+.player-list {
+    margin: 20px 0;
+}
+
+/* Gameplay Screen */
+#gameplay {
+    padding: 0;
+    position: relative;
+}
+
+.game-info {
+    position: absolute;
+    top: 10px;
+    left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    padding: 0 20px;
+    font-size: 18px;
+    font-weight: bold;
+    color: var(--light-color);
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+    z-index: 10;
+}
+
+#game-canvas-container {
+    width: 100%;
+    height: 100%;
+    background-color: var(--river-blue);
+}
+
+#game-canvas {
+    width: 100%;
+    height: 100%;
+}
+
+#mobile-controls {
+    position: absolute;
+    bottom: 20px;
+    left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+    padding: 0 10px;
+    z-index: 10;
+}
+
+.paddle-btn {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.3);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 14px;
+    color: var(--light-color);
+    border: 2px solid var(--light-color);
+}
+
+#special-action-btn {
+    position: absolute;
+    top: 30px;
+    right: 20px;
+}
+
+#minimap-container {
+    position: absolute;
+    bottom: 100px;
+    right: 10px;
+    width: 100px;
+    height: 150px;
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 5px;
+    z-index: 10;
+}
+
+#minimap {
+    width: 100%;
+    height: 100%;
+    padding: 5px;
+}
+
+/* End Game Screen */
+#end-game {
+    background-color: var(--light-color);
+    justify-content: center;
+}
+
+.race-results {
+    width: 100%;
+    max-width: 400px;
+    margin: 20px auto;
+}
+
+.result-entry {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    background-color: #f5f5f5;
+    border-radius: 8px;
+    margin-bottom: 10px;
+}
+
+.position {
+    font-weight: bold;
+    font-size: 18px;
+    width: 40px;
+}
+
+.time {
+    font-family: monospace;
+    font-size: 16px;
+}
+
+/* Media Queries */
+@media (min-width: 768px) {
+    .mobile-only {
+        display: none;
+    }
+}
+
+@media (max-width: 767px) {
+    .kayak-options, .river-options {
+        padding: 5px;
+    }
+    
+    .nav-buttons {
+        padding-top: 10px;
+    }
+    
+    .primary-btn, .secondary-btn {
+        font-size: 14px;
+        padding: 8px 16px;
+    }
+}
+
+/* Animation Classes */
+.animated-bg {
+    background-size: 400% 400%;
+    animation: gradientBG 15s ease infinite;
+}
+
+@keyframes gradientBG {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+.fade-in {
+    animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.slide-in {
+    animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Multiplayer Only Elements */
+.multiplayer-only {
+    display: none;
+}
+
+.multiplayer .multiplayer-only {
+    display: block;
+}
+
+/* Connection Status */
+.connection-status-container {
+    margin-top: 10px;
+    margin-bottom: 20px;
+    padding: 8px 12px;
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 14px;
+}
+
+#connection-status {
+    margin-left: 5px;
+    font-weight: bold;
+}
+
+#connection-status.connected {
+    color: var(--success-color);
+}
+
+#connection-status.disconnected {
+    color: var(--danger-color);
+}
+
+/* Chat Messages */
+.chat-message {
+    margin-bottom: 8px;
+    padding: 5px 0;
+    border-bottom: 1px solid #eeeeee;
+}
+
+.chat-message .sender {
+    font-weight: bold;
+    color: var(--primary-color);
+}
+
+/* Room Code */
+.room-code {
+    font-family: monospace;
+    background-color: #f5f5f5;
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: inset 0 0 5px rgba(0,0,0,0.1);
+}
+
+/* Kayak Avatars */
+.player-kayak.kayak-1 {
+    background-color: #FF9800;
+}
+
+.player-kayak.kayak-2 {
+    background-color: #9C27B0;
+}
+
+.player-kayak.kayak-3 {
+    background-color: #4CAF50;
+}

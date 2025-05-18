@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generate Game Images</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .canvas-container {
+            margin-bottom: 30px;
+            border: 1px solid #ccc;
+            display: inline-block;
+            background-color: white;
+        }
+        h2 {
+            margin-top: 40px;
+            color: #2196F3;
+        }
+        button {
+            padding: 10px 15px;
+            background-color: #2196F3;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 20px;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #1976D2;
+        }
+        .download-all {
+            display: block;
+            margin: 30px auto;
+            font-size: 18px;
+            padding: 15px 25px;
+            background-color: #4CAF50;
+        }
+        .instructions {
+            background-color: #e0f7fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 30px;
+        }
+    </style>
+</head>
+<body>
+    <h1>River Rapids: Bangladesh - Image Generator</h1>
+    
+    <div class="instructions">
+        <p>This tool generates all the game images using canvas. Click on each button to create and download the corresponding image, or use "Download All Images" to generate all at once.</p>
+        <p>After downloading, move the images to your game's assets/images directory.</p>
+    </div>
+    
+    <h2>Main Background</h2>
+    <div class="canvas-container">
+        <canvas id="mainBgCanvas" width="800" height="600"></canvas>
+    </div>
+    <button onclick="downloadImage('mainBgCanvas', 'main-bg')">Download Main Background</button>
+    
+    <h2>Kayak 1: Racing Kayak</h2>
+    <div class="canvas-container">
+        <canvas id="kayak1Canvas" width="200" height="200"></canvas>
+    </div>
+    <button onclick="downloadImage('kayak1Canvas', 'kayakOpt1')">Download Kayak 1</button>
+    
+    <h2>Kayak 2: Balanced Kayak</h2>
+    <div class="canvas-container">
+        <canvas id="kayak2Canvas" width="200" height="200"></canvas>
+    </div>
+    <button onclick="downloadImage('kayak2Canvas', 'kayak2')">Download Kayak 2</button>
+    
+    <h2>Kayak 3: Traditional Kayak</h2>
+    <div class="canvas-container">
+        <canvas id="kayak3Canvas" width="200" height="200"></canvas>
+    </div>
+    <button onclick="downloadImage('kayak3Canvas', 'kayak3')">Download Kayak 3</button>
+    
+    <h2>Padma River</h2>
+    <div class="canvas-container">
+        <canvas id="padmaCanvas" width="300" height="200"></canvas>
+    </div>
+    <button onclick="downloadImage('padmaCanvas', 'padma')">Download Padma River</button>
+    
+    <h2>Jamuna River</h2>
+    <div class="canvas-container">
+        <canvas id="jamunaCanvas" width="300" height="200"></canvas>
+    </div>
+    <button onclick="downloadImage('jamunaCanvas', 'jamuna')">Download Jamuna River</button>
+    
+    <h2>Meghna River</h2>
+    <div class="canvas-container">
+        <canvas id="meghnaCanvas" width="300" height="200"></canvas>
+    </div>
+    <button onclick="downloadImage('meghnaCanvas', 'meghna')">Download Meghna River</button>
+    
+    <button class="download-all" onclick="generateAllImages()">Download All Images</button>
+    
+    <script>
+        // Draw main background
+        function drawMainBackground() {
+            const canvas = document.getElementById('mainBgCanvas');
+            const ctx = canvas.getContext('2d');
+            
+            // Sky gradient
+            const skyGradient = ctx.createLinearGradient(0, 0, 0, canvas.height * 0.6);
+            skyGradient.addColorStop(0, '#1976D2');
+            skyGradient.addColorStop(1, '#64B5F6');
+            ctx.fillStyle = skyGradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height * 0.6);
+            
+            // River gradient
+            const riverGradient = ctx.createLinearGradient(0, canvas.height * 0.6, 0, canvas.height);
+            riverGradient.addColorStop(0, '#1565C0');
+            riverGradient.addColorStop(1, '#0D47A1');
+            ctx.fillStyle = riverGradient;
+            ctx.fillRect(0, canvas.height * 0.6, canvas.width, canvas.height * 0.4);
+            
+            // Add shoreline
+            ctx.fillStyle = '#2E7D32';
+            ctx.beginPath();
+            ctx.moveTo(0, canvas.height * 0.6);
+            for (let x = 0; x < canvas.width; x += 20) {
+                const y = canvas.height * 0.6 + Math.sin(x / 40) * 5;
+                ctx.lineTo(x, y);
+            }
+            ctx.lineTo(canvas.width, canvas.height * 0.6);
+            ctx.lineTo(canvas.width, 0);
+            ctx.lineTo(0, 0);
+            ctx.closePath();
+            ctx.fill();
+            
+            // Add distant mountains
+            ctx.fillStyle = '#004D40';
+            ctx.beginPath();
+            ctx.moveTo(0, canvas.height * 0.3);
+            for (let x = 0; x < canvas.width; x += 100) {
+                const height = Math.random() * canvas.height * 0.15 + canvas.height * 0.05;
+                ctx.lineTo(x, canvas.height * 0.3 - height);
+                ctx.lineTo(x + 50, canvas.height * 0.3);
+            }
+            ctx.lineTo(canvas.width, canvas.height * 0.3);
+            ctx.lineTo(canvas.width, 0);
+            ctx.lineTo(0, 0);
+            ctx.closePath();
+            ctx.fill();
+            
+            // Add trees silhouettes
+            for (let i = 0; i < 15; i++) {
+                const x = Math.random() * canvas.width;
+                const y = canvas.height * 0.6;
+                const size = Math.random() * 30 + 20;
+                
+                ctx.fillStyle = '#1B5E20';
+                ctx.beginPath();
+                ctx.rect(x - 5, y - size, 10, size);
+                ctx.fill();
+                
+                ctx.beginPath();
+                ctx.arc(x, y - size, size / 2, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            
+            // Add kayak silhouettes
+            for (let i = 0; i < 3; i++) {
+                const x = Math.random() * canvas.width * 0.7 + canvas.width * 0.15;
+                const y = canvas.height * 0.75 + Math.random() * canvas.height * 0.15;
+                
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+                
+                // Kayak body
+                ctx.beginPath();
+                ctx.ellipse(x, y, 30, 10, 0, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Person
+                ctx.beginPath();
+                ctx.arc(x, y - 10, 8, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Paddle
+                ctx.beginPath();
+                ctx.moveTo(x - 25, y - 15);
+                ctx.lineTo(x + 25, y - 15);
+                ctx.stroke();
+            }
+            
+            // Add sparkles on water
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+            for (let i = 0; i < 100; i++) {
+                const x = Math.random() * canvas.width;
+                const y = canvas.height * 0.6 + Math.random() * canvas.height * 0.4;
+                const size = Math.random() * 2 + 1;
+                
+                ctx.beginPath();
+                ctx.arc(x, y, size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            
+            // Add title
+            ctx.font = 'bold 48px Arial';
+            ctx.fillStyle = '#FFC107';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.strokeStyle = '#212121';
+            ctx.lineWidth = 3;
+            ctx.strokeText('River Rapids: Bangladesh', canvas.width / 2, canvas.height / 2 - 50);
+            ctx.fillText('River Rapids: Bangladesh', canvas.width / 2, canvas.height / 2 - 50);
+            
+            ctx.font = 'bold 24px Arial';
+            ctx.strokeText('Kayak Racing Adventure', canvas.width / 2, canvas.height / 2);
+            ctx.fillText('Kayak Racing Adventure', canvas.width / 2, canvas.height / 2);
+        }
+        
+        // Draw Kayak 1 (Racing Kayak)
+        function drawKayak1() {
+            const canvas = document.getElementById('kayak1Canvas');
+            const ctx = canvas.getContext('2d');
+            
+            // Background
+            ctx.fillStyle = 'rgba(33, 150, 243, 0.1)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Center coordinates
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            
+            // Kayak body
+            ctx.save();
+            ctx.translate(centerX, centerY);
+            
+            // Shadow
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
+            ctx.beginPath();
+            ctx.ellipse(5, 5, 85, 25, 0, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Main kayak body - streamlined racing design
+            const gradient = ctx.createLinearGradient(-80, 0, 80, 0);
+            gradient.addColorStop(0, '#F57C00');
+            gradient.addColorStop(0.5, '#FF9800');
+            gradient.addColorStop(1, '#F57C00');
+            
+            ctx.fillStyle = gradient;
+            ctx.beginPath();
+            ctx.moveTo(-80, 0);
+            ctx.bezierCurveTo(-80, -20, -50, -25, 0, -25);
+            ctx.bezierCurveTo(50, -25, 80, -20, 80, 0);
+            ctx.bezierCurveTo(80, 20, 50, 25, 0, 25);
+            ctx.bezierCurveTo(-50, 25, -80, 20, -80, 0);
+            ctx.closePath();
+            ctx.fill();
+            
+            // Kayak details - racing stripes
+            ctx.strokeStyle = '#D84315';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.moveTo(-60, -15);
+            ctx.lineTo(60, -15);
+            ctx.stroke();
+            
+            ctx.beginPath();
+            ctx.moveTo(-60, 15);
+            ctx.lineTo(60, 15);
+            ctx.stroke();
+            
+            // Cockpit
+            ctx.fillStyle = '#212121';
+            ctx.beginPath();
+            ctx.ellipse(0, 0, 25, 15, 0, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Shine/highlight
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.7)';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(-70, -10);
+            ctx.bezierCurveTo(-40, -20, 40, -20, 70, -10);
+            ctx.stroke();
+            
+            ctx.restore();
+            
+            // Stats text
+            ctx.fillStyle = '#2196F3';
+            ctx.font = 'bold 16px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('Racing Kayak', centerX, 30);
+            
+            ctx.font = '14px Arial';
+            ctx.fillText('Speed: ★★★★★', centerX, canvas.height - 50);
+            ctx.fillText('Maneuverability: ★★★☆☆', centerX, canvas.height - 30);
+            ctx.fillText('Durability: ★★☆☆☆', centerX, canvas.height - 10);
+        }
+        
+        // Draw Kayak 2 (Balanced Kayak)
+        function drawKayak2() {
+            const canvas = document.getElementById('kayak2Canvas');
+            const ctx = canvas.getContext('2d');
+            
+            // Background
+            ctx.fillStyle = 'rgba(33, 150, 243, 0.1)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Center coordinates
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            
+            // Kayak body
+            ctx.save();
+            ctx.translate(centerX, centerY);
+            
+            // Shadow
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
+            ctx.beginPath();
+            ctx.ellipse(5, 5, 75, 30, 0, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Main kayak body - balanced design
+            const gradient = ctx.createLinearGradient(-70, 0, 70, 0);
+            gradient.addColorStop(0, '#388E3C');
+            gradient.addColorStop(0.5, '#4CAF50');
+            gradient.addColorStop(1, '#388E3C');
+            
+            ctx.fillStyle = gradient;
+            ctx.beginPath();
+            ctx.moveTo(-70, 0);
+            ctx.bezierCurveTo(-70, -25, -40, -30, 0, -30);
+            ctx.bezierCurveTo(40, -30, 70, -25, 70, 0);
+            ctx.bezierCurveTo(70, 25, 40, 30, 0, 30);
+            ctx.bezierCurveTo(-40, 30, -70, 25, -70, 0);
+            ctx.closePath();
+            ctx.fill();
+            
+            // Kayak details
+            ctx.strokeStyle = '#1B5E20';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.moveTo(-50, -20);
+            ctx.lineTo(50, -20);
+            ctx.stroke();
+            
+            ctx.beginPath();
+            ctx.moveTo(-50, 20);
+            ctx.lineTo(50, 20);
+            ctx.stroke();
+            
+            // Cockpit
+            ctx.fillStyle = '#212121';
+            ctx.beginPath();
+            ctx.ellipse(0, 0, 25, 18, 0, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Shine/highlight
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.7)';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(-60, -15);
+            ctx.bezierCurveTo(-30, -25, 30, -25, 60, -15);
+            ctx.stroke();
+            
+            ctx.restore();
+            
+            // Stats text
+            ctx.fillStyle = '#2196F3';
+            ctx.font = 'bold 16px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('Balanced Kayak', centerX, 30);
+            
+            ctx.font = '14px Arial';
+            ctx.fillText('Speed: ★★★★☆', centerX, canvas.height - 50);
+            ctx.fillText('Maneuverability: ★★★★☆', centerX, canvas.height - 30);
+            ctx.fillText('Durability: ★★★☆☆', centerX, canvas.height - 10);
+        }
+        
+        // Draw Kayak 3 (Traditional Kayak)
+        function drawKayak3() {
+            const canvas = document.getElementById('kayak3Canvas');
+            const ctx = canvas.getContext('2d');
+            
+            // Background
+            ctx.fillStyle = 'rgba(33, 150, 243, 0.1)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Center coordinates
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            
+            // Kayak body
+            ctx.save();
+            ctx.translate(centerX, centerY);
+            
+            // Shadow
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
+            ctx.beginPath();
+            ctx.ellipse(5, 5, 65, 35, 0, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Main kayak body - traditional design, wider and more stable
+            const gradient = ctx.createLinearGradient(-60, 0, 60, 0);
+            gradient.addColorStop(0, '#5D4037');
+            gradient.addColorStop(0.5, '#795548');
+            gradient.addColorStop(1, '#5D4037');
+            
+            ctx.fillStyle = gradient;
+            ctx.beginPath();
+            ctx.moveTo(-60, 0);
+            ctx.bezierCurveTo(-60, -20, -40, -35, 0, -35);
+            ctx.bezierCurveTo(40, -35, 60, -20, 60, 0);
+            ctx.bezierCurveTo(60, 20, 40, 35, 0, 35);
+            ctx.bezierCurveTo(-40, 35, -60, 20, -60, 0);
+            ctx.closePath();
+            ctx.fill();
+            
+            // Kayak details - traditional patterns
+            ctx.strokeStyle = '#3E2723';
+            ctx.lineWidth = 2;
+            
+            // Horizontal bands
+            for (let y = -25; y <= 25; y += 10) {
+                ctx.beginPath();
+                ctx.moveTo(-50, y);
+                ctx.lineTo(50, y);
+                ctx.stroke();
+            }
+            
+            // Vertical supports
+            for (let x = -40; x <= 40; x += 20) {
+                ctx.beginPath();
+                ctx.moveTo(x, -25);
+                ctx.lineTo(x, 25);
+                ctx.stroke();
+            }
+            
+            // Cockpit
+            ctx.fillStyle = '#212121';
+            ctx.beginPath();
+            ctx.ellipse(0, 0, 20, 15, 0, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Traditional decorative elements at bow and stern
+            ctx.fillStyle = '#8D6E63';
+            ctx.beginPath();
+            ctx.moveTo(-60, 0);
+            ctx.lineTo(-70, -10);
+            ctx.lineTo(-60, -5);
+            ctx.closePath();
+            ctx.fill();
+            
+            ctx.beginPath();
+            ctx.moveTo(60, 0);
+            ctx.lineTo(70, -10);
+            ctx.lineTo(60, -5);
+            ctx.closePath();
+            ctx.fill();
+            
+            // Shine/highlight
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.7)';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(-50, -20);
+            ctx.bezierCurveTo(-25, -30, 25, -30, 50, -20);
+            ctx.stroke();
+            
+            ctx.restore();
+            
+            // Stats text
+            ctx.fillStyle = '#2196F3';
+            ctx.font = 'bold 16px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('Traditional Kayak', centerX, 30);
+            
+            ctx.font = '14px Arial';
+            ctx.fillText('Speed: ★★★☆☆', centerX, canvas.height - 50);
+            ctx.fillText('Maneuverability: ★★★★★', centerX, canvas.height - 30);
+            ctx.fillText('Durability: ★★★★☆', centerX, canvas.height - 10);
+        }
+        
+        // Draw Padma River
+        function drawPadmaRiver() {
+            const canvas = document.getElementById('padmaCanvas');
+            const ctx = canvas.getContext('2d');
+            
+            // Sky gradient
+            const skyGradient = ctx.createLinearGradient(0, 0, 0, canvas.height * 0.4);
+            skyGradient.addColorStop(0, '#64B5F6');
+            skyGradient.addColorStop(1, '#90CAF9');
+            ctx.fillStyle = skyGradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height * 0.4);
+            
+            // River gradient
+            const riverGradient = ctx.createLinearGradient(0, canvas.height * 0.4, 0, canvas.height);
+            riverGradient.addColorStop(0, '#1976D2');
+            riverGradient.addColorStop(1, '#1565C0');
+            ctx.fillStyle = riverGradient;
+            ctx.fillRect(0, canvas.height * 0.4, canvas.width, canvas.height * 0.6);
+            
+            // Shoreline
+            ctx.fillStyle = '#81C784';
+            ctx.beginPath();
+            ctx.moveTo(0, canvas.height * 0.4);
+            
+            // Left bank with gentle curves
+            for (let x = 0; x <= canvas.width / 3; x += 10) {
+                const variation = Math.sin(x / 30) * 5;
+                ctx.lineTo(x, canvas.height * 0.4 + variation);
+            }
+            
+            // Right bank
+            for (let x = canvas.width * 2 / 3; x <= canvas.width; x += 10) {
+                const variation = Math.sin(x / 20) * 5;
+                ctx.lineTo(x, canvas.height * 0.4 + variation);
+            }
+            
+            ctx.lineTo(canvas.width, canvas.height * 0.4);
+            ctx.lineTo(canvas.width, 0);
+            ctx.lineTo(0, 0);
+            ctx.closePath();
+            ctx.fill();
+            
+            // Add trees on banks
+            for (let i = 0; i < 10; i++) {
+                let x;
+                if (i < 5) {
+                    x = Math.random() * canvas.width / 4;
+                } else {
+                    x = canvas.width * 3/4 + Math.random() * canvas.width / 4;
+                }
+                
+                const y = canvas.height * 0.4;
+                const height = Math.random() * 20 + 15;
+                
+                // Tree trunk
+                ctx.fillStyle = '#5D4037';
+                ctx.fillRect(x - 2, y - height, 4, height);
+                
+                // Tree foliage
+                ctx.fillStyle = '#388E3C';
+                ctx.beginPath();
+                ctx.arc(x, y - height - 10, 12, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            
+            // River flow lines (gentle curves for Padma)
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+            ctx.lineWidth = 2;
+            
+            for (let y = canvas.height * 0.5; y < canvas.height; y += 20) {
+                ctx.beginPath();
+                ctx.moveTo(0, y);
+                
+                for (let x = 0; x <= canvas.width; x += 30) {
+                    const variation = Math.sin(x / 60) * 5;
+                    ctx.lineTo(x, y + variation);
+                }
+                
+                ctx.stroke();
+            }
+            
+            // Few obstacles (moderate difficulty)
+            for (let i = 0; i < 3; i++) {
+                const x = canvas.width / 4 + Math.random() * canvas.width / 2;
+                const y = canvas.height * 0.6 + Math.random() * canvas.height * 0.3;
+                
+                // Draw small rock
+                ctx.fillStyle = '#9E9E9E';
+                ctx.beginPath();
+                ctx.arc(x, y, 5, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Water ripple
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
+                ctx.beginPath();
+                ctx.arc(x, y, 10, 0, Math.PI * 2);
+                ctx.stroke();
+            }
+            
+            // Title
+            ctx.fillStyle = 'white';
+            ctx.font = 'bold 24px Arial';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
+            ctx.shadowBlur = 5;
+            ctx.fillText('Padma River', canvas.width / 2, 30);
+            ctx.shadowBlur = 0;
+            
+            // Difficulty indicator
+            ctx.font = '16px Arial';
+            ctx.fillText('★☆☆ Moderate', canvas.width / 2, canvas.height - 20);
+        }
+        
+        // Draw Jamuna River
+        function drawJamunaRiver() {
+            const canvas = document.getElementById('jamunaCanvas');
+            const ctx = canvas.getContext('2d');
+            
+            // Sky gradient - slightly more dramatic for higher difficulty
+            const skyGradient = ctx.createLinearGradient(0, 0, 0, canvas.height * 0.4);
+            skyGradient.addColorStop(0, '#42A5F5');
+            skyGradient.addColorStop(1, '#64B5F6');
+            ctx.fillStyle = skyGradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height * 0.4);
+            
+            // River gradient - stronger currents
+            const riverGradient = ctx.createLinearGradient(0, canvas.height * 0.4, 0, canvas.height);
+            riverGradient.addColorStop(0, '#1565C0');
+            riverGradient.addColorStop(1, '#0D47A1');
+            ctx.fillStyle = riverGradient;
+            ctx.fillRect(0, canvas.height * 0.4, canvas.width, canvas.height * 0.6);
+            
+            // Narrower river with steeper banks
+            ctx.fillStyle = '#4CAF50';
+            
+            // Left bank (steeper)
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            ctx.lineTo(canvas.width / 5, canvas.height * 0.4);
+            ctx.lineTo(0, canvas.height * 0.4);
+            ctx.closePath();
+            ctx.fill();
+            
+            // Right bank (steeper)
+            ctx.beginPath();
+            ctx.moveTo(canvas.width, 0);
+            ctx.lineTo(canvas.width * 4/5, canvas.height * 0.4);
+            ctx.lineTo(canvas.width, canvas.height * 0.4);
+            ctx.closePath();
+            ctx.fill();
+            
+            // Add rocky shores
+            for (let i = 0; i < 15; i++) {
+                let x;
+                if (i < 8) {
+                    x = canvas.width / 5 * Math.random();
+                } else {
+                    x = canvas.width - canvas.width / 5 * Math.random();
+                }
+                
+                const y = canvas.height * 0.4 - Math.random() * 10;
+                const size = Math.random() * 5 + 3;
+                
+                ctx.fillStyle = '#795548';
+                ctx.beginPath();
+                ctx.arc(x, y, size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            
+            // Add a few trees 
+            for (let i = 0; i < 6; i++) {
+                let x;
+                if (i < 3) {
+                    x = canvas.width / 10 + Math.random() * canvas.width / 10;
+                } else {
+                    x = canvas.width - canvas.width / 10 - Math.random() * canvas.width / 10;
+                }
+                
+                const y = canvas.height * 0.3;
+                const height = Math.random() * 30 + 20;
+                
+                // Tree trunk
+                ctx.fillStyle = '#5D4037';
+                ctx.fillRect(x - 3, y - height, 6, height);
+                
+                // Tree foliage
+                ctx.fillStyle = '#2E7D32';
+                ctx.beginPath();
+                ctx.arc(x, y - height - 15, 15, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            
+            // River flow lines (stronger currents for Jamuna)
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
+            ctx.lineWidth = 2;
+            
+            for (let y = canvas.height * 0.5; y < canvas.height; y += 15) {
+                ctx.beginPath();
+                ctx.moveTo(canvas.width / 5, y);
+                
+                for (let x = canvas.width / 5; x <= canvas.width * 4/5; x += 20) {
+                    const variation = Math.sin(x / 40) * 8; // More pronounced current
+                    ctx.lineTo(x, y + variation);
+                }
+                
+                ctx.lineTo(canvas.width * 4/5, y);
+                ctx.stroke();
+            }
+            
+            // More obstacles (higher difficulty)
+            for (let i = 0; i < 8; i++) {
+                const x = canvas.width / 4 + Math.random() * canvas.width / 2;
+                const y = canvas.height * 0.5 + Math.random() * canvas.height * 0.4;
+                
+                if (i < 5) {  // Rocks
+                    ctx.fillStyle = '#757575';
+                    ctx.beginPath();
+                    ctx.arc(x, y, 8, 0, Math.PI * 2);
+                    ctx.fill();
+                    
+                    // Water ripple
+                    ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
+                    ctx.beginPath();
+                    ctx.arc(x, y, 15, 0, Math.PI * 2);
+                    ctx.stroke();
+                } else {  // Debris
+                    ctx.fillStyle = '#8D6E63';
+                    ctx.fillRect(x - 10, y - 3, 20, 6);
+                }
+            }
+            
+            // Title
+            ctx.fillStyle = 'white';
+            ctx.font = 'bold 24px Arial';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
+            ctx.shadowBlur = 5;
+            ctx.fillText('Jamuna River', canvas.width / 2, 30);
+            ctx.shadowBlur = 0;
+            
+            // Difficulty indicator
+            ctx.font = '16px Arial';
+            ctx.fillText('★★☆ Higher Difficulty', canvas.width / 2, canvas.height - 20);
+        }
+        
+        // Draw Meghna River
+        function drawMeghnaRiver() {
+            const canvas = document.getElementById('meghnaCanvas');
+            const ctx = canvas.getContext('2d');
+            
+            // Dramatic sky for advanced difficulty
+            const skyGradient = ctx.createLinearGradient(0, 0, 0, canvas.height * 0.4);
+            skyGradient.addColorStop(0, '#1565C0');
+            skyGradient.addColorStop(1, '#42A5F5');
+            ctx.fillStyle = skyGradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height * 0.4);
+            
+            // Add clouds
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+            for (let i = 0; i < 5; i++) {
+                const x = Math.random() * canvas.width;
+                const y = Math.random() * canvas.height * 0.3;
+                const size = Math.random() * 20 + 10;
+                
+                ctx.beginPath();
+                ctx.arc(x, y, size, 0, Math.PI * 2);
+                ctx.arc(x + size * 0.5, y - size * 0.2, size * 0.7, 0, Math.PI * 2);
+                ctx.arc(x - size * 0.5, y - size * 0.1, size * 0.6, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            
+            // River gradient - powerful currents
+            const riverGradient = ctx.createLinearGradient(0, canvas.height * 0.4, 0, canvas.height);
+            riverGradient.addColorStop(0, '#0D47A1');
+            riverGradient.addColorStop(0.5, '#1565C0');
+            riverGradient.addColorStop(1, '#0D47A1');
+            ctx.fillStyle = riverGradient;
+            ctx.fillRect(0, canvas.height * 0.4, canvas.width, canvas.height * 0.6);
+            
+            // Complex river course with varying width
+            ctx.fillStyle = '#388E3C';
+            
+            // Left bank with variable width
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            ctx.lineTo(0, canvas.height * 0.4);
+            
+            let lastX = 0;
+            for (let y = canvas.height * 0.4; y <= canvas.height; y += 20) {
+                const variation = Math.sin(y / 30) * 30 + 40; // Variable width
+                ctx.lineTo(variation, y);
+                lastX = variation;
+            }
+            
+            ctx.lineTo(0, canvas.height);
+            ctx.closePath();
+            ctx.fill();
+            
+            // Right bank with variable width
+            ctx.beginPath();
+            ctx.moveTo(canvas.width, 0);
+            ctx.lineTo(canvas.width, canvas.height * 0.4);
+            
+            for (let y = canvas.height * 0.4; y <= canvas.height; y += 20) {
+                const variation = canvas.width - (Math.sin(y / 40) * 30 + 40); // Variable width
+                ctx.lineTo(variation, y);
+            }
+            
+            ctx.lineTo(canvas.width, canvas.height);
+            ctx.closePath();
+            ctx.fill();
+            
+            // Turbulent water currents
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
+            ctx.lineWidth = 2;
+            
+            for (let i = 0; i < 10; i++) {
+                ctx.beginPath();
+                
+                const startY = canvas.height * 0.45 + Math.random() * canvas.height * 0.5;
+                const curveHeight = 30 + Math.random() * 40;
+                
+                ctx.moveTo(50, startY);
+                ctx.bezierCurveTo(
+                    canvas.width * 0.25, startY - curveHeight,
+                    canvas.width * 0.75, startY + curveHeight,
+                    canvas.width - 50, startY - Math.random() * 20
+                );
+                
+                ctx.stroke();
+            }
+            
+            // Whirlpools (unique to Meghna)
+            for (let i = 0; i < 3; i++) {
+                const x = canvas.width * 0.2 + Math.random() * canvas.width * 0.6;
+                const y = canvas.height * 0.6 + Math.random() * canvas.height * 0.3;
+                const size = 10 + Math.random() * 15;
+                
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.7)';
+                ctx.beginPath();
+                
+                for (let radius = size; radius > 2; radius -= 4) {
+                    ctx.beginPath();
+                    ctx.arc(x, y, radius, 0, Math.PI * 2);
+                    ctx.stroke();
+                }
+            }
+            
+            // Many obstacles (advanced difficulty)
+            for (let i = 0; i < 12; i++) {
+                const x = canvas.width * 0.1 + Math.random() * canvas.width * 0.8;
+                const y = canvas.height * 0.5 + Math.random() * canvas.height * 0.45;
+                
+                if (i < 5) {  // Rocks
+                    ctx.fillStyle = '#616161';
+                    ctx.beginPath();
+                    ctx.arc(x, y, 6 + Math.random() * 6, 0, Math.PI * 2);
+                    ctx.fill();
+                } else if (i < 9) {  // Debris
+                    ctx.fillStyle = '#795548';
+                    ctx.save();
+                    ctx.translate(x, y);
+                    ctx.rotate(Math.random() * Math.PI);
+                    ctx.fillRect(-12, -4, 24, 8);
+                    ctx.restore();
+                } else {  // Water sprites/ripples
+                    ctx.strokeStyle = 'rgba(255, 255, 255, 0.6)';
+                    ctx.beginPath();
+                    ctx.arc(x, y, 10 + Math.random() * 10, 0, Math.PI * 2);
+                    ctx.stroke();
+                }
+            }
+            
+            // Title
+            ctx.fillStyle = 'white';
+            ctx.font = 'bold 24px Arial';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
+            ctx.shadowBlur = 5;
+            ctx.fillText('Meghna River', canvas.width / 2, 30);
+            ctx.shadowBlur = 0;
+            
+            // Difficulty indicator
+            ctx.font = '16px Arial';
+            ctx.fillText('★★★ Advanced Difficulty', canvas.width / 2, canvas.height - 20);
+        }
+        
+        // Helper function to download canvas as PNG
+        function downloadImage(canvasId, filename) {
+            const canvas = document.getElementById(canvasId);
+            const link = document.createElement('a');
+            link.download = filename + '.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
+        
+        // Generate all images at once
+        function generateAllImages() {
+            // Draw all canvases
+            drawMainBackground();
+            drawKayak1();
+            drawKayak2();
+            drawKayak3();
+            drawPadmaRiver();
+            drawJamunaRiver();
+            drawMeghnaRiver();
+            
+            // Download in sequence with small delays to avoid browser issues
+            setTimeout(() => downloadImage('mainBgCanvas', 'main-bg'), 100);
+            setTimeout(() => downloadImage('kayak1Canvas', 'kayakOpt1'), 300);
+            setTimeout(() => downloadImage('kayak2Canvas', 'kayak2'), 500);
+            setTimeout(() => downloadImage('kayak3Canvas', 'kayak3'), 700);
+            setTimeout(() => downloadImage('padmaCanvas', 'padma'), 900);
+            setTimeout(() => downloadImage('jamunaCanvas', 'jamuna'), 1100);
+            setTimeout(() => downloadImage('meghnaCanvas', 'meghna'), 1300);
+        }
+        
+        // Initialize all canvases on load
+        window.onload = function() {
+            drawMainBackground();
+            drawKayak1();
+            drawKayak2();
+            drawKayak3();
+            drawPadmaRiver();
+            drawJamunaRiver();
+            drawMeghnaRiver();
+        };
+    </script>
+</body>
+</html>

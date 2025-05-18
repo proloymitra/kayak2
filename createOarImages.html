@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Oar Images</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 20px;
+        }
+        .canvas-container {
+            margin: 20px auto;
+            border: 1px solid #ccc;
+            display: inline-block;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 10px;
+            background-color: #2196F3;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>Create Oar Images</h1>
+    <p>Click the buttons below to generate and download oar images.</p>
+    
+    <div class="canvas-container">
+        <canvas id="oarCanvas" width="200" height="200"></canvas>
+    </div>
+    
+    <div>
+        <button id="createLeftOar">Create Left Oar</button>
+        <button id="createRightOar">Create Right Oar</button>
+        <button id="createBothOars">Create Both Oars</button>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const canvas = document.getElementById('oarCanvas');
+            const ctx = canvas.getContext('2d');
+            
+            function drawLeftOar() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                // Set canvas background to transparent
+                ctx.fillStyle = 'rgba(0, 0, 0, 0)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                ctx.save();
+                ctx.translate(100, 100);
+                
+                // Draw paddle part
+                ctx.fillStyle = '#D7CCC8'; // Light wood color
+                ctx.beginPath();
+                ctx.moveTo(-50, -80);
+                ctx.lineTo(-80, -30);
+                ctx.lineTo(-60, 0);
+                ctx.lineTo(-30, -60);
+                ctx.closePath();
+                ctx.fill();
+                
+                // Add wood grain to paddle
+                ctx.strokeStyle = '#A1887F';
+                ctx.lineWidth = 1;
+                for (let i = -70; i < -30; i += 8) {
+                    ctx.beginPath();
+                    ctx.moveTo(-70, i);
+                    ctx.lineTo(-40, i);
+                    ctx.stroke();
+                }
+                
+                // Draw handle/shaft
+                ctx.fillStyle = '#5D4037'; // Dark wood color
+                ctx.beginPath();
+                ctx.rect(-35, -10, 80, 10);
+                ctx.fill();
+                
+                // Add wood grain to handle
+                ctx.strokeStyle = '#4E342E';
+                ctx.lineWidth = 1;
+                for (let i = -30; i < 40; i += 10) {
+                    ctx.beginPath();
+                    ctx.moveTo(i, -10);
+                    ctx.lineTo(i, 0);
+                    ctx.stroke();
+                }
+                
+                // Add highlights
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(-50, -70);
+                ctx.lineTo(-70, -40);
+                ctx.stroke();
+                
+                ctx.restore();
+                
+                // Create download link
+                const link = document.createElement('a');
+                link.download = 'leftOar1.png';
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            }
+            
+            function drawRightOar() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                // Set canvas background to transparent
+                ctx.fillStyle = 'rgba(0, 0, 0, 0)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                ctx.save();
+                ctx.translate(100, 100);
+                
+                // Draw paddle part (mirrored from left oar)
+                ctx.fillStyle = '#D7CCC8'; // Light wood color
+                ctx.beginPath();
+                ctx.moveTo(50, -80);
+                ctx.lineTo(80, -30);
+                ctx.lineTo(60, 0);
+                ctx.lineTo(30, -60);
+                ctx.closePath();
+                ctx.fill();
+                
+                // Add wood grain to paddle
+                ctx.strokeStyle = '#A1887F';
+                ctx.lineWidth = 1;
+                for (let i = -70; i < -30; i += 8) {
+                    ctx.beginPath();
+                    ctx.moveTo(70, i);
+                    ctx.lineTo(40, i);
+                    ctx.stroke();
+                }
+                
+                // Draw handle/shaft
+                ctx.fillStyle = '#5D4037'; // Dark wood color
+                ctx.beginPath();
+                ctx.rect(-45, -10, 80, 10);
+                ctx.fill();
+                
+                // Add wood grain to handle
+                ctx.strokeStyle = '#4E342E';
+                ctx.lineWidth = 1;
+                for (let i = -40; i < 30; i += 10) {
+                    ctx.beginPath();
+                    ctx.moveTo(i, -10);
+                    ctx.lineTo(i, 0);
+                    ctx.stroke();
+                }
+                
+                // Add highlights
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(50, -70);
+                ctx.lineTo(70, -40);
+                ctx.stroke();
+                
+                ctx.restore();
+                
+                // Create download link
+                const link = document.createElement('a');
+                link.download = 'rightOar1.png';
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            }
+            
+            // Left Oar button
+            document.getElementById('createLeftOar').addEventListener('click', drawLeftOar);
+            
+            // Right Oar button
+            document.getElementById('createRightOar').addEventListener('click', drawRightOar);
+            
+            // Both Oars button
+            document.getElementById('createBothOars').addEventListener('click', function() {
+                drawLeftOar();
+                setTimeout(drawRightOar, 500); // Slight delay to avoid browser issues with multiple downloads
+            });
+            
+            // Draw initial oars
+            drawLeftOar();
+            setTimeout(drawRightOar, 500);
+        });
+    </script>
+</body>
+</html>
