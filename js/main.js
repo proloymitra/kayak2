@@ -285,6 +285,14 @@ function setupEventListeners() {
     document.getElementById('join-room-btn').addEventListener('click', () => {
         if (PhotonManager.isConnectedToPhoton()) {
             showScreen(GameState.JOIN_ROOM);
+            
+            // Add a slight delay to ensure the screen is visible
+            setTimeout(() => {
+                // Update public room list if the function exists
+                if (typeof PhotonManager.updatePublicRoomList === 'function') {
+                    PhotonManager.updatePublicRoomList();
+                }
+            }, 500);
         } else {
             alert('Could not connect to multiplayer server. Please try again later.');
         }
@@ -349,6 +357,13 @@ function setupEventListeners() {
     
     document.getElementById('back-from-join-room').addEventListener('click', () => {
         showScreen(GameState.MULTIPLAYER_OPTIONS);
+    });
+    
+    // Refresh rooms button
+    document.getElementById('refresh-rooms-btn').addEventListener('click', () => {
+        if (PhotonManager.isConnectedToPhoton() && typeof PhotonManager.updatePublicRoomList === 'function') {
+            PhotonManager.updatePublicRoomList();
+        }
     });
     
     // Room Lobby

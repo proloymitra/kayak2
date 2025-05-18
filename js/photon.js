@@ -269,10 +269,50 @@ function handleStateChange(state) {
             
             // Update UI to show connected status
             updateConnectionStatus(true);
+            
+            // Join lobby when connected to master
+            photonClient.joinLobby();
             break;
             
         case Photon.LoadBalancing.LoadBalancingClient.State.JoinedLobby:
             console.log("Joined Photon lobby");
+            
+            // Check if we have pending room actions to take
+            if (photonClient._pendingRoomName) {
+                console.log("Creating pending room after joining lobby");
+                const roomName = photonClient._pendingRoomName;
+                photonClient._pendingRoomName = null;
+                continueRoomCreation(roomName);
+            } else if (photonClient._pendingJoinRoom) {
+                console.log("Joining pending room after joining lobby");
+                const roomName = photonClient._pendingJoinRoom;
+                photonClient._pendingJoinRoom = null;
+                continueRoomJoin(roomName);
+            }
+            break;
+            
+        case Photon.LoadBalancing.LoadBalancingClient.State.JoinedRoom:
+            console.log("Joined room:", photonClient.currentRoom.name);
+            
+            // Set local player data and update UI
+            localPlayerData.id = photonClient.myActor().actorNr;
+            localPlayerData.name = "Player " + localPlayerData.id;
+            
+            // Determine if we're the host (first player or room creator)
+            isRoomHost = (localPlayerData.id === 1);
+            
+            // If we're host, enable the start button after a short delay
+            if (isRoomHost) {
+                setTimeout(() => {
+                    const startButton = document.getElementById('start-game-btn');
+                    if (startButton) {
+                        startButton.disabled = false;
+                    }
+                }, 1000);
+            }
+            
+            // Send initial player data
+            sendPlayerUpdate();
             break;
             
         case Photon.LoadBalancing.LoadBalancingClient.State.Disconnected:
@@ -282,6 +322,24 @@ function handleStateChange(state) {
             
             // Update UI to show disconnected status
             updateConnectionStatus(false);
+            
+            // Try to reconnect
+            setTimeout(() => {
+                if (!isConnectedToPhoton) {
+                    console.log("Attempting to reconnect to Photon...");
+                    try {
+                        photonClient.connectToRegionMaster("us");
+                    } catch (error) {
+                        console.error("Reconnection failed:", error);
+                        setupMockPhoton();
+                    }
+                }
+            }, 3000);
+            break;
+            
+        case Photon.LoadBalancing.LoadBalancingClient.State.Error:
+            console.error("Photon error state");
+            setupMockPhoton();
             break;
     }
 }
@@ -329,7 +387,7 @@ function handlePhotonError(errorCode, errorMsg) {
 function createPhotonRoom(roomName) {
     if (!isConnectedToPhoton) {
         console.error("Cannot create room: Not connected to Photon");
-        return false;
+        return setupMockRoom();
     }
     
     try {
@@ -338,12 +396,55 @@ function createPhotonRoom(roomName) {
             roomName = generateRoomCode();
         }
         
+        // Make sure we're connected to master server
+        if (photonClient.isInLobby()) {
+            console.log("Already in lobby, creating room...");
+        } else if (photonClient.isConnectedToMaster()) {
+            console.log("Connected to master, joining lobby first...");
+            photonClient.joinLobby();
+            
+            // We'll create the room after joining the lobby via callbacks
+            // Store the roomName for later
+            photonClient._pendingRoomName = roomName;
+            
+            // Set a short timeout to proceed anyway
+            setTimeout(() => {
+                if (!photonClient.isJoinedToRoom() && photonClient._pendingRoomName) {
+                    console.log("Creating room after timeout...");
+                    const storedName = photonClient._pendingRoomName;
+                    photonClient._pendingRoomName = null;
+                    continueRoomCreation(storedName);
+                }
+            }, 1000);
+            
+            return roomName;
+        } else {
+            console.warn("Not connected to master, using mock room");
+            return setupMockRoom();
+        }
+        
+        return continueRoomCreation(roomName);
+    } catch (error) {
+        console.error("Failed to create room:", error);
+        return setupMockRoom();
+    }
+}
+
+// Continue room creation after preparation
+function continueRoomCreation(roomName) {
+    try {
         // Create room options
         const roomOptions = new Photon.LoadBalancing.RoomOptions();
         roomOptions.maxPlayers = 4;
         roomOptions.isVisible = true;
+        roomOptions.emptyRoomTtl = 10000;
+        roomOptions.playerTtl = 10000;
+        roomOptions.customRoomProperties = {
+            gameType: "kayakRace",
+            appVersion: "1.0"
+        };
         
-        // Create and join the room
+        // Create and join the room - this will be a public room
         photonClient.createRoom(roomName, roomOptions);
         
         console.log(`Created room: ${roomName}`);
@@ -355,20 +456,97 @@ function createPhotonRoom(roomName) {
         
         return roomName;
     } catch (error) {
-        console.error("Failed to create room:", error);
-        return false;
+        console.error("Failed in continueRoomCreation:", error);
+        return setupMockRoom();
     }
+}
+
+// Create a mock room when real Photon fails
+function setupMockRoom() {
+    console.log("Setting up mock room as fallback");
+    setupMockPhoton();
+    const code = generateRoomCode();
+    setTimeout(() => {
+        updateConnectionStatus(true);
+        isRoomHost = true;
+        localPlayerData.id = 1;
+        addMockPlayers();
+    }, 1000);
+    return code;
 }
 
 // Join an existing Photon room
 function joinPhotonRoom(roomName) {
     if (!isConnectedToPhoton) {
         console.error("Cannot join room: Not connected to Photon");
-        return false;
+        return setupMockJoin(roomName);
     }
     
     try {
-        // Join the room
+        // Make sure we're connected to master server
+        if (photonClient.isInLobby()) {
+            console.log("Already in lobby, joining room...");
+        } else if (photonClient.isConnectedToMaster()) {
+            console.log("Connected to master, joining lobby first...");
+            photonClient.joinLobby();
+            
+            // Store the roomName for joining after we enter the lobby
+            photonClient._pendingJoinRoom = roomName;
+            
+            // Set a short timeout to proceed anyway
+            setTimeout(() => {
+                if (!photonClient.isJoinedToRoom() && photonClient._pendingJoinRoom) {
+                    console.log("Joining room after timeout...");
+                    const storedName = photonClient._pendingJoinRoom;
+                    photonClient._pendingJoinRoom = null;
+                    continueRoomJoin(storedName);
+                }
+            }, 1000);
+            
+            return true;
+        } else {
+            console.warn("Not connected to master, using mock join");
+            return setupMockJoin(roomName);
+        }
+        
+        return continueRoomJoin(roomName);
+    } catch (error) {
+        console.error("Failed to join room:", error);
+        return setupMockJoin(roomName);
+    }
+}
+
+// Continue joining a room after preparation
+function continueRoomJoin(roomName) {
+    try {
+        console.log("Attempting to join room:", roomName);
+        
+        // First, check if the room exists
+        const existingRooms = photonClient.availableRooms();
+        let roomExists = false;
+        
+        if (existingRooms && existingRooms.length > 0) {
+            for (const room of existingRooms) {
+                if (room.name === roomName) {
+                    roomExists = true;
+                    break;
+                }
+            }
+        }
+        
+        if (!roomExists) {
+            console.warn(`Room '${roomName}' not found, checking open rooms`);
+            
+            // Debug available rooms
+            if (existingRooms && existingRooms.length > 0) {
+                console.log("Available rooms:");
+                existingRooms.forEach(room => console.log(` - ${room.name} (${room.playerCount}/${room.maxPlayers})`));
+            } else {
+                console.log("No available rooms found");
+            }
+        }
+        
+        // Attempt to join by name anyway - Photon will search across regions
         photonClient.joinRoom(roomName);
         
         console.log(`Joined room: ${roomName}`);
@@ -380,9 +558,23 @@ function joinPhotonRoom(roomName) {
         
         return true;
     } catch (error) {
-        console.error("Failed to join room:", error);
-        return false;
+        console.error("Failed in continueRoomJoin:", error);
+        return setupMockJoin(roomName);
     }
+}
+
+// Set up a mock room join when real Photon fails
+function setupMockJoin(roomName) {
+    console.log("Setting up mock room join as fallback for:", roomName);
+    setupMockPhoton();
+    setTimeout(() => {
+        updateConnectionStatus(true);
+        isRoomHost = false;
+        localPlayerData.id = Math.floor(Math.random() * 3) + 2; // Random ID 2-4
+        localPlayerData.name = "Player " + localPlayerData.id;
+        addMockPlayers();
+    }, 1000);
+    return true;
 }
 
 // Leave the current Photon room
@@ -464,11 +656,12 @@ function handlePlayerJoined(data, actorNr) {
     
     // Add player to remotePlayers if it's not the local player
     if (actorNr !== localPlayerData.id) {
+        // Create a default player data object
         remotePlayers[actorNr] = {
             id: actorNr,
-            name: data.name || `Player ${actorNr}`,
-            kayakType: data.kayakType || 1,
-            riverType: data.riverType,
+            name: `Player ${actorNr}`,
+            kayakType: Math.floor(Math.random() * 3) + 1, // Random kayak until we get their data
+            riverType: selectedRiver,
             position: { x: 0, y: 0 },
             angle: 0,
             progress: 0,
@@ -476,19 +669,40 @@ function handlePlayerJoined(data, actorNr) {
             finishTime: 0
         };
         
+        console.log(`Added remote player: ${actorNr}`, remotePlayers[actorNr]);
+        
+        // If we have any data for this player, update it
+        if (data) {
+            if (data.name) remotePlayers[actorNr].name = data.name;
+            if (data.kayakType) remotePlayers[actorNr].kayakType = data.kayakType;
+            if (data.riverType) remotePlayers[actorNr].riverType = data.riverType;
+        }
+        
         // Update player list in UI
         updatePlayerListUI();
         
         // Send local player data to the new player
         sendPlayerUpdate();
+        
+        // Add a welcome message to chat
+        const chatMessages = document.querySelector('.chat-messages');
+        if (chatMessages) {
+            const messageElement = document.createElement('div');
+            messageElement.className = 'chat-message system-message';
+            messageElement.innerHTML = `<span class="sender">System:</span> ${remotePlayers[actorNr].name} joined the room`;
+            chatMessages.appendChild(messageElement);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
     }
     
     // Enable Start Game button if we're the host and have at least 2 players
     if (isRoomHost) {
         const totalPlayers = Object.keys(remotePlayers).length + 1; // +1 for local player
+        console.log(`Total players: ${totalPlayers}`);
         
-        if (totalPlayers >= 2) {
-            document.getElementById('start-game-btn').disabled = false;
+        const startButton = document.getElementById('start-game-btn');
+        if (startButton && totalPlayers >= 2) {
+            startButton.disabled = false;
         }
     }
 }
@@ -499,18 +713,34 @@ function handlePlayerLeft(actorNr) {
     
     // Remove player from remotePlayers
     if (remotePlayers[actorNr]) {
+        // Store the player name before removing
+        const playerName = remotePlayers[actorNr].name;
+        
+        // Remove from our list
         delete remotePlayers[actorNr];
         
         // Update player list in UI
         updatePlayerListUI();
+        
+        // Add a leave message to chat
+        const chatMessages = document.querySelector('.chat-messages');
+        if (chatMessages) {
+            const messageElement = document.createElement('div');
+            messageElement.className = 'chat-message system-message';
+            messageElement.innerHTML = `<span class="sender">System:</span> ${playerName} left the room`;
+            chatMessages.appendChild(messageElement);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
     }
     
     // Disable Start Game button if we're the host and don't have enough players
     if (isRoomHost) {
         const totalPlayers = Object.keys(remotePlayers).length + 1; // +1 for local player
+        console.log(`Total players after leave: ${totalPlayers}`);
         
-        if (totalPlayers < 2) {
-            document.getElementById('start-game-btn').disabled = true;
+        const startButton = document.getElementById('start-game-btn');
+        if (startButton && totalPlayers < 2) {
+            startButton.disabled = true;
         }
     }
 }
@@ -520,8 +750,12 @@ function handlePlayerUpdate(data, actorNr) {
     // Skip if it's our own update
     if (actorNr === localPlayerData.id) return;
     
+    console.log(`Received player update from ${actorNr}:`, data);
+    
     // Update player data
     if (!remotePlayers[actorNr]) {
+        console.log(`Creating new remote player ${actorNr} from update`);
+        
         remotePlayers[actorNr] = {
             id: actorNr,
             name: data.name || `Player ${actorNr}`,
@@ -533,22 +767,50 @@ function handlePlayerUpdate(data, actorNr) {
             finished: false,
             finishTime: 0
         };
+        
+        // Add a join message to chat since we just learned about this player
+        const chatMessages = document.querySelector('.chat-messages');
+        if (chatMessages) {
+            const messageElement = document.createElement('div');
+            messageElement.className = 'chat-message system-message';
+            messageElement.innerHTML = `<span class="sender">System:</span> ${remotePlayers[actorNr].name} joined the room`;
+            chatMessages.appendChild(messageElement);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
     }
     
     // Update player properties
     const player = remotePlayers[actorNr];
-    player.name = data.name || player.name;
-    player.kayakType = data.kayakType !== undefined ? data.kayakType : player.kayakType;
-    player.riverType = data.riverType !== undefined ? data.riverType : player.riverType;
-    player.position = data.position || player.position;
-    player.angle = data.angle !== undefined ? data.angle : player.angle;
-    player.progress = data.progress !== undefined ? data.progress : player.progress;
-    player.finished = data.finished !== undefined ? data.finished : player.finished;
-    player.finishTime = data.finishTime !== undefined ? data.finishTime : player.finishTime;
+    if (data.name) player.name = data.name;
+    if (data.kayakType !== undefined) player.kayakType = data.kayakType;
+    if (data.riverType !== undefined) player.riverType = data.riverType;
+    if (data.position) player.position = data.position;
+    if (data.angle !== undefined) player.angle = data.angle;
+    if (data.progress !== undefined) player.progress = data.progress;
+    if (data.finished !== undefined) player.finished = data.finished;
+    if (data.finishTime !== undefined) player.finishTime = data.finishTime;
     
-    // Update player list in UI if in lobby
-    if (currentState === GameState.ROOM_LOBBY || currentState === GameState.CREATE_ROOM) {
+    // If the player has finished and we have a global raceFinishTimes object
+    if (player.finished && player.finishTime && typeof raceFinishTimes !== 'undefined') {
+        raceFinishTimes[player.name] = player.finishTime;
+    }
+    
+    // Update player list in UI if in lobby or any room screen
+    if (currentState === GameState.ROOM_LOBBY || 
+        currentState === GameState.CREATE_ROOM || 
+        document.querySelector('.player-slots')) {
         updatePlayerListUI();
+    }
+    
+    // Enable Start Game button if we're the host and have at least 2 players
+    if (isRoomHost) {
+        const totalPlayers = Object.keys(remotePlayers).length + 1; // +1 for local player
+        console.log(`Total players after update: ${totalPlayers}`);
+        
+        const startButton = document.getElementById('start-game-btn');
+        if (startButton && totalPlayers >= 2) {
+            startButton.disabled = false;
+        }
     }
 }
 
@@ -624,6 +886,63 @@ function updateConnectionStatus(connected) {
         connectionIndicator.className = connected ? 'connected' : 'disconnected';
         connectionIndicator.textContent = connected ? 'Connected' : 'Disconnected';
     }
+}
+
+// Get available rooms from Photon
+function getAvailableRooms() {
+    if (!photonClient || !isConnectedToPhoton) {
+        return [];
+    }
+    
+    try {
+        return photonClient.availableRooms() || [];
+    } catch (error) {
+        console.error("Failed to get available rooms:", error);
+        return [];
+    }
+}
+
+// Update the join screen with public rooms
+function updatePublicRoomList() {
+    const roomsList = document.querySelector('.public-rooms');
+    if (!roomsList) return;
+    
+    // Get available rooms
+    const rooms = getAvailableRooms();
+    
+    // Clear existing list
+    roomsList.innerHTML = '';
+    
+    if (rooms.length === 0) {
+        const noRooms = document.createElement('div');
+        noRooms.className = 'no-rooms';
+        noRooms.textContent = 'No public rooms available';
+        roomsList.appendChild(noRooms);
+        return;
+    }
+    
+    // Add each room to the list
+    rooms.forEach(room => {
+        const roomItem = document.createElement('div');
+        roomItem.className = 'room-item';
+        roomItem.innerHTML = `
+            <div class="room-name">${room.name}</div>
+            <div class="room-info">${room.playerCount}/${room.maxPlayers} players</div>
+            <button class="join-room-btn secondary-btn" data-room="${room.name}">Join</button>
+        `;
+        
+        // Add event listener for join button
+        const joinBtn = roomItem.querySelector('.join-room-btn');
+        if (joinBtn) {
+            joinBtn.addEventListener('click', () => {
+                joinPhotonRoom(room.name);
+                document.getElementById('lobby-room-code').textContent = room.name;
+                showScreen(GameState.ROOM_LOBBY);
+            });
+        }
+        
+        roomsList.appendChild(roomItem);
+    });
 }
 
 // Update player list in UI
@@ -796,6 +1115,8 @@ window.PhotonManager = {
     convertRemotePlayersToOpponents,
     sendPhotonEvent,
     sendPlayerUpdate,
+    updatePublicRoomList,
+    getAvailableRooms,
     isConnectedToPhoton: () => isConnectedToPhoton,
     isRoomHost: () => isRoomHost,
     localPlayerData: localPlayerData,

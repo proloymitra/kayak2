@@ -215,9 +215,17 @@
         <div id="join-room" class="game-screen">
             <h2>Join Room</h2>
             <div class="room-code-entry">
-                <input type="text" id="room-code-input" placeholder="Enter 6-digit room code" maxlength="6">
+                <input type="text" id="room-code-input" placeholder="Enter room code">
                 <button id="join-btn" class="primary-btn">Join</button>
             </div>
+            
+            <h3>Public Rooms</h3>
+            <div class="public-rooms">
+                <!-- Rooms will be populated dynamically -->
+                <div class="no-rooms">Loading available rooms...</div>
+            </div>
+            
+            <button id="refresh-rooms-btn" class="secondary-btn">Refresh Rooms</button>
             <button id="back-from-join-room" class="secondary-btn">Back</button>
         </div>
 
